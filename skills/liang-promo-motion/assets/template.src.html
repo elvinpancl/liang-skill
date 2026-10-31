@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>片头动画</title>
+<style>
+/*BRAND_CSS*/
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+html.alpha,html.alpha body{background:transparent}
+body{font-family:var(--ui);color:var(--text);-webkit-font-smoothing:antialiased}
+#viewport{position:fixed;inset:0}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;overflow:hidden;background:var(--bg)}
+.alpha #stage{background:transparent}
+.alpha .bgl{display:none}
+.layer{position:absolute;inset:0;pointer-events:none}
+.w{position:absolute;left:0;top:0;transform-origin:50% 50%;will-change:transform,opacity}
+
+/* 场景 1：品牌出现时的光点 */
+.orb{width:40px;height:40px;border-radius:50%;background:#fff;box-shadow:0 0 60px 30px color-mix(in srgb,var(--brand) 55%,transparent)}
+/* 场景 2：流程节点依次点亮，下面的预览跟着切换，一个节点只切一次 */
+#flow{width:1180px;padding:40px 44px 48px;border-radius:24px;background:linear-gradient(180deg,rgba(255,248,235,.09),rgba(255,248,235,.04));
+  border:1px solid var(--card-bd);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+#nodes{display:flex;justify-content:space-between}
+.node{width:184px;text-align:center}
+.node .th{height:104px;border-radius:12px;border:2px solid rgba(255,255,255,.14);background:#1a1713;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font:800 34px/1 var(--display);color:var(--muted)}
+.node .th img{width:100%;height:100%;object-fit:cover;display:block}
+.node .nm{margin-top:12px;font:800 32px/1 var(--display);letter-spacing:.06em}
+#prev{position:relative;margin:36px auto 0;width:704px;height:396px;border-radius:14px;overflow:hidden;border:2px solid var(--brand);background:#000}
+#prev .pv{position:absolute;inset:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;object-fit:cover;
+  font:800 72px/1 var(--display);color:var(--text);opacity:0;background:radial-gradient(ellipse at 50% 40%,#2a241c,#0e0c0a)}
+#prevTag{position:absolute;left:14px;bottom:14px;padding:8px 14px;border-radius:10px;background:rgba(10,9,8,.8);font:600 22px/1 var(--ui);color:var(--brand)}
+
+/* 旁白字幕（核对用，默认关闭；?captions=1 或按 C 打开）与底部安全区参考线（?guides=1） */
+#caption{position:absolute;left:0;right:0;bottom:70px;text-align:center;font:800 58px/1.2 var(--display);color:#fff;
+  text-shadow:0 3px 0 rgba(0,0,0,.7),0 0 18px rgba(0,0,0,.8);display:none;pointer-events:none}
+.show-captions #caption{display:block}
+#guide{position:absolute;left:0;right:0;bottom:0;height:15%;border-top:2px dashed rgba(255,90,90,.8);display:none}
+.guides #guide{display:block}
+#controls{position:fixed;left:0;right:0;bottom:0;padding:14px 24px 18px;display:flex;align-items:center;gap:16px;
+  background:linear-gradient(transparent,rgba(0,0,0,.75));color:#ddd;font:500 14px/1 var(--ui);opacity:0;transition:opacity .3s}
+#controls.on{opacity:1}
+#controls button{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:8px;padding:8px 12px;font:600 14px/1 var(--ui);cursor:pointer}
+#scrub{flex:1;accent-color:var(--gold)}
+#tc{font-family:var(--mono);min-width:110px;text-align:right}
+.export #controls{display:none}
+</style>
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+  <div class="layer bgl brand-bg"></div>
+  <div class="layer bgl brand-dots"></div>
+
+  <div class="w orb" id="orb"></div>
+  <div class="w brand-lockup" id="mark"><img class="logo" data-asset="logo" alt=""><div class="sep"></div><div class="zh" data-brand="zh"></div></div>
+
+  <div class="w" id="flow"><div id="nodes"></div><div id="prev"><div id="prevTag"></div></div></div>
+
+  <div class="w brand-end" id="end">
+    <div class="row1"><img class="logo" data-asset="logo" alt=""><div class="sep"></div><div class="zh" data-brand="zh"></div></div>
+    <div class="brand-title" id="slogan"></div>
+  </div>
+
+  <div class="layer bgl brand-vignette"></div>
+  <div id="guide"></div>
+  <div id="caption"></div>
+</div>
+</div>
+<div id="controls"><button id="btnPlay">暂停</button><button id="btnCap">字幕</button><input id="scrub" type="range" min="0" step="0.001" value="0"><span id="tc">0.00 s</span></div>
+
+<script>
+/* ========= 可改设置 =========
+   CUES：旁白时间表（秒）。每句一个信息点，停 2–3 秒；拿到正式配音后改成实际开始时间，所有画面跟着移动。
+         done 写这一句最后一个动作完成的秒数，cue_lint 会检查完成后至少停 0.7 秒再切。
+         某句确实要更长（例如五步流程），写 maxHold 并在交付说明里交代原因。
+   BRAND：构建时从品牌包注入，不要手改。
+   STEPS：流程节点。第二项是 ASSET_SRC 里的键，填了就显示真实界面截图；null 时显示占位。
+   SFX：音效卡点，构建时可以输出成表。 */
+const CUES=[
+  {id:'c1', t:0.0, text:'品牌全名', done:1.5},
+  {id:'c2', t:2.6, text:'一句话定位', done:4.8},
+  {id:'c3', t:5.6, text:'口号', done:7.4},
+];
+const DURATION=8.4;
+const BRAND=/*BRAND*/{zh:'品牌名',slogan:{white:'口号前半',gold:'口号后半'},font:'sans-serif'}/*BRAND_END*/;
+const STEPS=[['故事',null],['剧本',null],['角色',null],['分镜',null],['视频',null]];
+const ASSET_SRC=/*ASSETS*/{logo:'brand:logo'}/*ASSETS_END*/;
+const SFX=[{t:0.1,what:'品牌音、光点爆开'},{t:2.95,what:'节点点亮，每 0.4 秒一次，共 5 次'},{t:5.75,what:'结尾品牌落定'},{t:6.2,what:'口号逐字落下'}];
+
+/* ========= 工具函数 ========= */
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,p)=>a+(b-a)*p;
+const P=(t,a,d)=>d<=0?(t>=a?1:0):clamp((t-a)/d);
+const E={outQ:p=>1-(1-p)*(1-p),outC:p=>1-Math.pow(1-p,3),ioS:p=>-(Math.cos(Math.PI*p)-1)/2,
+  outB:p=>{const c1=1.6,c3=c1+1;return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2)}};
+// 以 (x,y) 为中心放置元素
+function tf(el,o={}){
+  const {x=0,y=0,s=1,op=1,b=0}=o;
+  el.style.transform=`translate(-50%,-50%) translate(${x.toFixed(2)}px,${y.toFixed(2)}px) scale(${s.toFixed(4)})`;
+  el.style.opacity=op.toFixed(3);
+  el.style.filter=b>.05?`blur(${b.toFixed(2)}px)`:'';
+  el.style.visibility=op>.003?'visible':'hidden';
+}
+function pop(t,start,dur=.42,dy=30,s0=.9){const p=P(t,start,dur);return {p,op:E.outQ(clamp(p*1.6)),y:(1-E.outC(p))*dy,s:lerp(s0,1,E.outB(p))}}
+const fade=(t,a,d)=>E.ioS(P(t,a,d));
+function cueText(t){let cur='';for(const c of CUES){if(t>=c.t-0.02)cur=c.text}return cur}
+const T={};CUES.forEach(c=>T[c.id]=c.t);
+
+let built=false;
+function build(){
+  document.querySelectorAll('[data-brand]').forEach(el=>el.textContent=BRAND[el.dataset.brand]);
+  $('nodes').innerHTML=STEPS.map(([n,a],i)=>`<div class="node"><div class="th" id="nd${i}">${a?`<img data-asset="${a}" alt="">`:String(i+1).padStart(2,'0')}</div><div class="nm" id="nn${i}">${n}</div></div>`).join('');
+  $('prev').insertAdjacentHTML('afterbegin',STEPS.map(([n,a],i)=>a?`<img class="pv" id="pv${i}" data-asset="${a}" alt="">`:`<div class="pv" id="pv${i}">${n}</div>`).join(''));
+  const split=(s,cls)=>Array.from(s).map(ch=>`<span class="${cls}">${ch}</span>`).join('');
+  $('slogan').innerHTML=split(BRAND.slogan.white,'ch')+split(BRAND.slogan.gold,'ch g');
+  document.querySelectorAll('img[data-asset]').forEach(img=>{img.src=ASSET_SRC[img.dataset.asset];img.decoding='sync'});
+  built=true;
+}
+
+/* ========= 渲染：任意时刻 t 的完整画面，只依赖 t ========= */
+function render(t){
+  if(!built)build();
+  t=clamp(t,0,DURATION);
+  // 1 品牌全名：光点爆开，品牌组合居中出现；进入第 2 句时缩到流程窗口上方当标题
+  const orb=P(t,0,.35);tf($('orb'),{x:960,y:500,s:lerp(.2,3,E.outC(orb)),op:orb>0?1-orb:0});
+  const m=pop(t,.12,.5,40,.82);
+  // 先缩到上方让出位置，流程窗口再进来，两者不叠在一起
+  const up=E.ioS(P(t,T.c2-.45,.55));
+  const markOut=1-fade(t,T.c3-.3,.3);
+  tf($('mark'),{x:960,y:lerp(500,150,up)+m.y,s:m.s*lerp(1,.5,up),op:m.op*markOut});
+  // 扫光：中文名的渐变从右扫到左，扫一次
+  const sw=P(t,.7,.8);$('mark').querySelector('.zh').style.backgroundPosition=`${lerp(100,0,sw).toFixed(1)}% 0`;
+
+  // 2 一句话定位：节点每 0.4 秒点亮一个，预览同一时刻切到这一步；最后一个节点之后不再切
+  const f=pop(t,T.c2+.05,.45,40,.94);
+  // 窗口底边要高于画面底部 15%（y 918），那里留给剪映字幕
+  tf($('flow'),{x:960,y:570+f.y,s:f.s,op:f.op*(1-fade(t,T.c3-.3,.3))});
+  const litAt=i=>T.c2+.35+i*.4;
+  STEPS.forEach((_,i)=>{
+    const on=P(t,litAt(i),.2);
+    const th=$('nd'+i);
+    th.style.borderColor=on>0?`color-mix(in srgb,var(--brand) ${Math.round(on*100)}%,rgba(255,255,255,.14))`:'';
+    th.style.boxShadow=on>0?`0 0 ${Math.round(24*on)}px color-mix(in srgb,var(--brand) 55%,transparent)`:'';
+    $('nn'+i).style.color=on>.5?'var(--brand)':'';
+    // 第一步在点亮前就以暗色显示，预览框不能黑着（用户反馈过）
+    const a=i===0?1:P(t,litAt(i),.15),next=i<STEPS.length-1?P(t,litAt(i+1),.15):0;
+    $('pv'+i).style.opacity=(a*(1-next)).toFixed(3);
+    if(i===0)$('pv0').style.filter=on<1?`grayscale(${(1-on).toFixed(2)}) brightness(${lerp(.4,1,on).toFixed(2)})`:'';
+  });
+  let cur=-1;STEPS.forEach((_,i)=>{if(t>=litAt(i))cur=i});
+  $('prevTag').textContent=cur>=0?`${String(cur+1).padStart(2,'0')} ${STEPS[cur][0]}`:'';
+  $('prevTag').style.opacity=cur>=0?1:0;
+
+  // 3 口号：结尾两行，第一行品牌组合，第二行口号一行写完，逐字落下
+  const e=pop(t,T.c3+.15,.5,40,.86);
+  tf($('end'),{x:960,y:470+e.y,s:e.s,op:e.op});
+  $('slogan').querySelectorAll('.ch').forEach((ch,i)=>{const p=P(t,T.c3+.6+i*.06,.32);
+    ch.style.opacity=E.outQ(p).toFixed(3);ch.style.transform=`translateY(${((1-E.outC(p))*-36).toFixed(1)}px)`});
+
+  $('caption').textContent=cueText(t);
+}
+
+/* ========= 舞台缩放与播放控制 ========= */
+const params=new URLSearchParams(location.search);
+const exportMode=params.get('export')==='1';
+if(exportMode)document.documentElement.classList.add('export');
+if(params.get('alpha')==='1')document.documentElement.classList.add('alpha');
+if(params.get('captions')==='1')document.documentElement.classList.add('show-captions');
+if(params.get('guides')==='1')document.documentElement.classList.add('guides');
+function fit(){if(exportMode){$('viewport').style.transform='';return}const s=Math.min(innerWidth/1920,innerHeight/1080);$('viewport').style.transform=`scale(${s})`;$('viewport').style.transformOrigin='50% 50%'}
+let playing=!exportMode,now=parseFloat(params.get('t'))||0,last=null;
+$('scrub').max=DURATION;
+function frame(ts){
+  if(playing){if(last!==null)now+=(ts-last)/1000;if(now>=DURATION){now=DURATION;playing=false;$('btnPlay').textContent='重播'}}
+  last=ts;render(now);$('scrub').value=now;$('tc').textContent=now.toFixed(2)+' s';requestAnimationFrame(frame);
+}
+function togglePlay(){if(now>=DURATION)now=0;playing=!playing;$('btnPlay').textContent=playing?'暂停':'播放'}
+window.renderFrame=t=>{render(t);return {t,caption:cueText(t)}};
+window.SHORT_INFO={duration:DURATION,cues:CUES,fontFamily:BRAND.font};
+addEventListener('resize',fit);
+if(!exportMode){
+  addEventListener('keydown',e=>{
+    if(e.code==='Space'){e.preventDefault();togglePlay()}
+    else if(e.key==='ArrowRight')now=Math.min(DURATION,now+1);
+    else if(e.key==='ArrowLeft')now=Math.max(0,now-1);
+    else if(e.key==='r'||e.key==='R'){now=0;playing=true;$('btnPlay').textContent='暂停'}
+    else if(e.key==='c'||e.key==='C')document.documentElement.classList.toggle('show-captions');
+    else if(e.key==='g'||e.key==='G')document.documentElement.classList.toggle('guides');
+  });
+  $('btnPlay').onclick=togglePlay;$('btnCap').onclick=()=>document.documentElement.classList.toggle('show-captions');
+  $('scrub').oninput=e=>{now=parseFloat(e.target.value);playing=false;$('btnPlay').textContent='播放'};
+  $('stage').onclick=togglePlay;
+  let hideT;addEventListener('mousemove',()=>{$('controls').classList.add('on');clearTimeout(hideT);hideT=setTimeout(()=>$('controls').classList.remove('on'),2000)});
+}
+fit();build();
+window.ready=Promise.all([document.fonts.load(`600 100px "${BRAND.font}"`),document.fonts.load(`800 100px "${BRAND.font}"`),document.fonts.ready,
+  ...[...document.images].map(i=>i.decode?i.decode().catch(()=>{}):0)]).then(()=>{
+  if(exportMode){render(now);return true}
+  // 预热：每段先在不可见状态下渲染一帧，避免第一次播到该段时卡顿
+  const stage=$('stage');stage.style.opacity='0.001';
+  const nextFrame=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  return (async()=>{for(const c of CUES){render(c.t+.5);await nextFrame()}
+    stage.style.opacity='';render(now);last=null;requestAnimationFrame(frame);return true})();
+});
+</script>
+</body>
+</html>

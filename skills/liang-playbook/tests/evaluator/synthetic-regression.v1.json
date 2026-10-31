@@ -1,0 +1,36 @@
+{
+  "fixture_version": "1.0-public-synthetic",
+  "visibility": "EVALUATOR_ONLY",
+  "generator_access": "FORBIDDEN",
+  "case_id": "synthetic-service-regression",
+  "industry": "合成测试服务（非真实行业证据）",
+  "calibration_eligible": false,
+  "calibration_exclusion_reason": "仅供检查评估结构，不能用于真实质量或阈值校准。",
+  "threshold": {
+    "status": "OBSERVATION_ONLY",
+    "active_gate": false,
+    "critical_fact_candidate_target": 1.0,
+    "minimum_source_completeness": null,
+    "minimum_critical_fact_recall": null,
+    "minimum_overall_content_recall": null
+  },
+  "content_recall": {
+    "matching": "SEMANTIC_NOT_KEYWORD_COUNT",
+    "metric_definitions": {
+      "critical_fact_recall": "只以 critical=true 的合成项目为分母。",
+      "overall_content_recall": "以全部合成项目为分母。"
+    },
+    "items": [
+      {
+        "id": "CR01",
+        "critical": true,
+        "fact": "合成订单需先核对用户声明的交付条件。"
+      },
+      {
+        "id": "CR02",
+        "critical": false,
+        "fact": "合成案例使用可读的段落标题。"
+      }
+    ]
+  }
+}

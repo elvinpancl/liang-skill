@@ -1,0 +1,4 @@
+interface:
+  display_name: "内容共鸣诊断"
+  short_description: "用五个经典传播理论诊断稿件的核心机制、共鸣证据与删改方向"
+  default_prompt: "请使用 $liang-resonate 诊断这份稿件最核心的共鸣机制和需要调整的位置。"

@@ -1,0 +1,156 @@
+{
+  "schema": "liang-promo-brand/1",
+  "name": {
+    "en": "Example",
+    "zh": "示例品牌",
+    "full": "Example 示例品牌"
+  },
+  "slogan": {
+    "text": "一句口号写在这里",
+    "white": "一句口号",
+    "gold": "写在这里"
+  },
+  "colors": {
+    "bg": "#0b0a09",
+    "gold": "#e9b45a",
+    "gold_hi": "#ffd98e",
+    "brand": "#5ad1ff",
+    "on_brand": "#04121a",
+    "text": "#f6f0e6",
+    "muted": "#a89e8f",
+    "dim": "#6d655a",
+    "warn": "#ff7a5c"
+  },
+  "fonts": {
+    "family": "Brand",
+    "system_ttc": "STHeiti Medium.ttc",
+    "faces": {
+      "demibold": {
+        "ttc_index": 0,
+        "css_weight": "100 649",
+        "use": "界面小字、章节标签",
+        "subset_file": "Brand-Regular.subset.ttf"
+      },
+      "heavy": {
+        "ttc_index": 0,
+        "css_weight": "650 900",
+        "use": "标题、说明",
+        "subset_file": "Brand-Bold.subset.ttf"
+      }
+    },
+    "display_weight": 800,
+    "ui_weight": 600,
+    "fallback": "\"PingFang SC\",\"Microsoft YaHei\",sans-serif",
+    "license": "对外发布前确认字体授权"
+  },
+  "logo": {
+    "original": "logo/logo.png",
+    "hires": "logo/logo_2x.png",
+    "hires_size": [
+      780,
+      396
+    ],
+    "radius_px": 14,
+    "glow": "0 0 60px rgba(90,209,255,.35)",
+    "rule": "原图不改图形和颜色"
+  },
+  "lockups": {
+    "inline": {
+      "logo_h": 160,
+      "sep": [
+        3,
+        128
+      ],
+      "zh_px": 140,
+      "gap": 38
+    },
+    "title": {
+      "logo_h": 80,
+      "scale_of_inline": 0.5
+    },
+    "end_two_line": {
+      "line1": {
+        "logo_h": 150,
+        "zh_px": 112,
+        "gap": 32,
+        "sep": [
+          3,
+          112
+        ]
+      },
+      "line2": {
+        "slogan_px": 84
+      }
+    }
+  },
+  "text_styles": {
+    "white_gradient": "linear-gradient(180deg,#ffffff 0%,#efe6d6 100%)",
+    "gold_gradient": "linear-gradient(180deg,#fff8e6 0%,#ffe2a0 42%,#e9a948 78%,#c4842e 100%)"
+  },
+  "backdrop": {
+    "radial": [
+      "#221c15",
+      "#14100c",
+      "#080706"
+    ],
+    "beat_pulse_frames": 6
+  },
+  "motion": {
+    "flash_max_per_film": 1,
+    "shake": false,
+    "chromatic": false
+  },
+  "safe_zones": {
+    "subtitle_bottom_ratio": 0.15,
+    "caption_zone_xywh": [
+      360,
+      850,
+      1200,
+      160
+    ]
+  },
+  "jianying": {
+    "font_mode": "default",
+    "library_fallback": "HarmonyOS_Sans_SC_Bold",
+    "system_font_title": "黑体-简",
+    "caption": {
+      "size": 6,
+      "center_y_px": 990,
+      "top_center_y_px": 168,
+      "max_width_px": 1100,
+      "text_color": "#04121A",
+      "bg_color": "#5AD1FF",
+      "bg_alpha": 1.0,
+      "round_radius": 0.4,
+      "bg_height": 0.0,
+      "bg_width": 0.3,
+      "intro": "弹入",
+      "intro_frames": 6,
+      "min_frames": 36,
+      "one_at_a_time": true
+    },
+    "chapter": {
+      "px": 36,
+      "color": "#FFD98E",
+      "bg_color": "#0B0A09",
+      "bg_alpha": 0.82,
+      "round_radius": 0.4,
+      "bg_height": 0.3,
+      "bg_width": 0.6,
+      "left_px": 56,
+      "center_y_px": 66
+    },
+    "lower_third_scrim": {
+      "from_y": 700,
+      "to_rgba": "rgba(8,7,6,.78)",
+      "fade_frames": 4
+    },
+    "pip_border": {
+      "color": "#FFD98E",
+      "line_px": 5,
+      "radius_px": 16,
+      "glow_blur": 1.2,
+      "glow_alpha": 0.7
+    }
+  }
+}

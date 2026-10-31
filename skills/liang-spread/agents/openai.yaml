@@ -1,0 +1,4 @@
+interface:
+  display_name: "传播情绪解码"
+  short_description: "用五个经典传播理论解码内容情绪、有效立场、传播入口与延展方向"
+  default_prompt: "请使用 $liang-spread 解码这段内容激活的受众情绪和传播机制。"

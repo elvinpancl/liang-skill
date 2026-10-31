@@ -1,0 +1,4 @@
+interface:
+  display_name: "结构性人群洞察"
+  short_description: "从购买处境与身份跃迁中提炼目标人群的一句话心理画像"
+  default_prompt: "请使用 $liang-persona 分析这个产品的核心付费人群，并用一句话说透他们的处境与心理。"

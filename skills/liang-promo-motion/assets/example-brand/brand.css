@@ -1,0 +1,41 @@
+/* 示例品牌样式：结构照一个已定稿品牌包抽出，颜色和字体换成中性值。
+   新品牌复制整个 example-brand/ 目录，改 brand.json 和这里的数值，两处保持一致。 */
+@font-face{font-family:"Brand";src:url("fonts/Brand-Regular.subset.ttf") format("truetype");font-weight:100 649;font-display:block}
+@font-face{font-family:"Brand";src:url("fonts/Brand-Bold.subset.ttf") format("truetype");font-weight:650 900;font-display:block}
+:root{
+  --bg:#0b0a09;--gold:#e9b45a;--gold-hi:#ffd98e;--brand:#5ad1ff;--on-brand:#04121a;--warn:#ff7a5c;
+  --text:#f6f0e6;--muted:#a89e8f;--dim:#6d655a;--card-bd:rgba(255,236,205,.14);
+  --ui:"Brand","STHeiti","PingFang SC","Microsoft YaHei",sans-serif;
+  --display:"Brand","STHeiti","PingFang SC",sans-serif;
+  --mono:"SF Mono",Menlo,Consolas,"Brand",monospace;
+}
+
+/* 背景：暖色径向渐变 + 点阵 + 暗角 + 颗粒。卡点片的金色透视网格在 liang-promo-beat 的 brand-backdrop.js */
+.brand-bg{background:radial-gradient(ellipse 72% 64% at 50% 46%,#221c15 0%,#14100c 52%,#080706 100%)}
+.brand-dots{background-image:radial-gradient(circle,rgba(255,226,180,.11) 1.3px,transparent 1.9px);background-size:30px 30px;
+  -webkit-mask-image:radial-gradient(ellipse 60% 55% at 50% 50%,#000 20%,transparent 80%);mask-image:radial-gradient(ellipse 60% 55% at 50% 50%,#000 20%,transparent 80%)}
+.brand-vignette{background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 55%,rgba(0,0,0,.72) 100%)}
+
+/* 横排组合：logo ｜ 中文名。中文字高约为 logo 高度的四分之三，垂直居中 */
+.brand-lockup{display:flex;align-items:center;white-space:nowrap;gap:38px}
+.brand-lockup .logo{height:160px;width:auto;display:block;border-radius:14px;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 0 60px rgba(90,209,255,.35)}
+.brand-lockup .sep{width:3px;height:128px;border-radius:2px;background:rgba(246,240,230,.4)}
+.brand-lockup .zh{font:800 140px/1 var(--display);letter-spacing:.06em;padding-top:6px;
+  background:linear-gradient(100deg,#fff 0%,#fff 42%,#d6f3ff 49%,#5ad1ff 51%,#fff 58%,#fff 100%);background-size:320% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 40px rgba(90,209,255,.25))}
+/* 扫光：把 background-position 从 100% 动到 0% */
+
+/* 结尾两行：第一行 logo ｜ 中文名，第二行口号一行写完 */
+.brand-end{display:flex;flex-direction:column;align-items:center;gap:34px}
+.brand-end .row1{display:flex;align-items:center;white-space:nowrap;gap:32px}
+.brand-end .logo{height:150px;width:auto;display:block;border-radius:14px;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 0 50px rgba(90,209,255,.3)}
+.brand-end .sep{width:3px;height:112px;border-radius:2px;background:rgba(246,240,230,.4)}
+.brand-end .zh{font:800 112px/1 var(--display);letter-spacing:.06em;color:var(--text);padding-top:4px}
+
+/* 口号与大字：白到暖白渐变，关键词加 .g 用金色渐变 */
+.brand-title{text-align:center;white-space:nowrap;font:800 84px/1.15 var(--display);letter-spacing:.08em;padding-left:.08em}
+.brand-title .ch{display:inline-block;transform-origin:50% 80%;background-image:linear-gradient(180deg,#ffffff 0%,#efe6d6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-title .ch.g{background-image:linear-gradient(180deg,#fff8e6 0%,#ffe2a0 42%,#e9a948 78%,#c4842e 100%);filter:drop-shadow(0 4px 18px rgba(240,170,70,.4))}
+
+/* 品牌色胶囊：绿底深字，用于强调标签、说明 */
+.brand-pill{display:inline-flex;align-items:center;padding:10px 22px;border-radius:999px;background:var(--brand);color:var(--on-brand);font:800 40px/1 var(--display);white-space:nowrap;box-shadow:0 0 30px rgba(90,209,255,.5)}

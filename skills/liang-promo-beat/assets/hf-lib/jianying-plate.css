@@ -1,0 +1,23 @@
+/* 底片模式：build-frames.mjs --plate 时内联。
+ * 隐藏交给剪映原生文字的说明和章节（含目标框和连线），3D 场景内部的文字、计数器、打字标题和打码保留。
+ * 必须用 !important：组件每帧写内联样式。
+ * 作品自己的元素（例如某段的标题）在作品的 lib/plate-extra.css 里追加，build-frames 会一起内联。 */
+.fx-stage .zr-callout,
+.fx-stage .zr-full-caption,
+.fx-stage .zr-chapter-window,
+.fx-stage .zr-chapter-tag {
+  display:none !important;
+}
+
+/* 转场交给剪映原生转场：保留切点的不透明度时刻，去掉烘焙进去的甩镜、冲击位移和模糊、色差、闪光。
+ * 3D 场景内部的运动、收束闪核和跟随画面的打码保留。 */
+.fx-stage .zr-whip-a,
+.fx-stage .zr-whip-b,
+.fx-stage .zr-crash-a,
+.fx-stage .zr-crash-b {
+  transform:none !important;
+  filter:none !important;
+}
+.fx-stage .zr-chromatic { filter:none !important; }
+.fx-stage .zr-flash,
+.fx-stage .zr-gold-sweep { display:none !important; }

@@ -1,0 +1,19 @@
+{
+  "workspace_dir": "直播录音资料",
+  "extractor_version": "public-v1",
+  "source_patterns": [
+    "原始逐字稿/**/*.txt",
+    "原始逐字稿/**/*.md"
+  ],
+  "masters": {
+    "tactics": "母版/打法.md",
+    "insights": "母版/洞见.md",
+    "method": "母版/方法.md"
+  },
+  "contracts": {
+    "正文写法": "契约/正文写法.md",
+    "来源与发布": "契约/来源与发布.md"
+  },
+  "speaker_aliases": {},
+  "speaker_paths": {}
+}

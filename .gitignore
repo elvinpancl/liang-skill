@@ -1,0 +1,13 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.gstack/
+.env
+.env.*
+!.env.example
+.claude/
+.codex/
+/projects/
+/制作过程/

@@ -1,0 +1,22 @@
+{
+  "name": "紫色卡片",
+  "layout": "card",
+  "text_size": "15px",
+  "letter_spacing": "0.5px",
+  "line_height": "1.85",
+  "lead_line_height": "1.85",
+  "side_margin": "0",
+  "para_gap": "18px",
+  "text_align": "left",
+  "text_color": "#48484A",
+  "accent": "#6B4CF5",
+  "heading_text": "#1D1D1F",
+  "heading_size": "21px",
+  "subheading_size": "17px",
+  "callout_bg": "#F3F1FE",
+  "box_bg": "#F6F5FA",
+  "title_card": true,
+  "title_card_label": "",
+  "title_card_top": "#EFEBFD",
+  "title_card_mid": "#F8F6FE"
+}

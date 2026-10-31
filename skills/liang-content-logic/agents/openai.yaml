@@ -1,0 +1,4 @@
+interface:
+  display_name: "内容叙事逻辑"
+  short_description: "逐段检查短视频稿件的叙事衔接、信息密度与口播连续性"
+  default_prompt: "请使用 $liang-content-logic 检查这份稿件的叙事连续性并标出高风险断点。"
