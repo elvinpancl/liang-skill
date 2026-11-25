@@ -22,3 +22,7 @@
 ## xkcd 字体
 
 `skills/liang-content/scripts/xkcd-font.css` 内嵌的字体来自 [ipython/xkcd-font](https://github.com/ipython/xkcd-font)，字体元数据署名为 ipython/xkcd-font contributors，适用 Creative Commons Attribution-NonCommercial 3.0 Unported（CC BY-NC 3.0）。完整许可见同目录 `LICENSE-xkcd-font-CC-BY-NC-3.0.txt`，许可链接为 https://creativecommons.org/licenses/by-nc/3.0/ 。本次发布保留原字体资源，未修改字形；它不受核心代码的 MIT 许可覆盖。
+
+## liang-skill-maker
+
+`skills/liang-skill-maker/` 自 2026-11-25 的重写版起是原创实现，说明文字和校验脚本均由本仓库作者撰写。流程思路（先交方案再写文件、按改动大小分轻重、验证分等级等）参考了公开的 Skill 制作方法，未收录第三方的文字与代码。
